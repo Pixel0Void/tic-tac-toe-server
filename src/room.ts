@@ -1,5 +1,7 @@
 import { GameState, PlayerSymbol } from "./dataTypes";
 
+const SCORE_TO_WIN = 3;
+
 export class Room {
     public id: string;
     public board: PlayerSymbol[];
@@ -70,6 +72,38 @@ export class Room {
         };
         this.currentGameState = GameState.WaitingForPlayers;
         console.log(`[ROOM ${this.id}] Full game state reseted.`);
+    }
+
+    private checkWin(): PlayerSymbol | null {
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        for (const pattern of winPatterns) {
+            const [a, b, c] = pattern;
+            if (this.board[a] !== PlayerSymbol.None &&
+                this.board[a] === this.board[b] &&
+                this.board[a] === this.board[c]) {
+                return this.board[a];   
+            }
+        }
+        return null;
+    }
+
+    private checkDraw(): boolean{
+        return this.board.every(cell => cell !== PlayerSymbol.None);
+    }
+
+    public checkOverallWin(): PlayerSymbol | null{
+        if (this.scores[PlayerSymbol.X]! >= SCORE_TO_WIN) {
+            return PlayerSymbol.X;
+        }
+        if (this.scores[PlayerSymbol.O]! >= SCORE_TO_WIN) {
+            return PlayerSymbol.O;
+        }
+        return null;
     }
 }
 
