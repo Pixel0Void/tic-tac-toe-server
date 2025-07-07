@@ -52,6 +52,25 @@ export class Room {
         }
         return null;
     }
+
+     public resetRoundState() {
+        this.board.fill(PlayerSymbol.None);
+        this.currentTurn = PlayerSymbol.X;
+        this.currentGameState = (Object.keys(this.players).length == 2) ? GameState.Active : GameState.WaitingForPlayers;
+        console.log(`[ROOM ${this.id}] Game state reseted.`);
+    }
+
+    public resetGameScoresAndPlayers() {
+        this.resetRoundState();
+        this.players = {};
+        this.playerSockets = {};
+        this.scores = {
+            [PlayerSymbol.X]: 0,
+            [PlayerSymbol.O]: 0  
+        };
+        this.currentGameState = GameState.WaitingForPlayers;
+        console.log(`[ROOM ${this.id}] Full game state reseted.`);
+    }
 }
 
 export const rooms: { [id: string]: Room } = {};
