@@ -36,10 +36,20 @@ export enum ProcessMoveType {
     continue
 }
 
+export interface MakeMoveDto {
+    index: number;
+}
+
 export interface ProcessMoveResult {
     type: ProcessMoveType;
     winner?: PlayerSymbol;
     overallWinner?: PlayerSymbol;
+}
+
+export interface GameOverDto{
+    message: string;
+    gameOver: boolean;
+    winner: PlayerSymbol;
 }
 
 export interface PlayerDisconnectedDto{
