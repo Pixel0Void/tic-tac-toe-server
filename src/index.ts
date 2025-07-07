@@ -1,5 +1,6 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { disconnection } from "./gameLogic";
 
 const httpServer = createServer();
 
@@ -11,6 +12,10 @@ export const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
     console.log(`[SERVER] User connected: ${socket.id}`);
+
+    socket.on("disconnect", (reason) => {
+        disconnection(socket, reason);
+    });
 });
 
 const PORT = process.env.PORT || 3000;
