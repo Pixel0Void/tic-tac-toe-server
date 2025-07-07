@@ -1,6 +1,6 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { disconnection } from "./gameLogic";
+import { assignPlayerToRoom, disconnection } from "./gameLogic";
 
 const httpServer = createServer();
 
@@ -15,6 +15,10 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", (reason) => {
         disconnection(socket, reason);
+    });
+
+    socket.on("findMatch", () => {
+        assignPlayerToRoom(socket);
     });
 });
 
