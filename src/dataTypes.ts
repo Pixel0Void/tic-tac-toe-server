@@ -22,6 +22,14 @@ export interface GameStateUpdateDto {
     playersCount: number;
 }
 
+export interface PlayerAssignedDto{
+    symbol: PlayerSymbol;
+}
+
+export interface RoomJoinedDto{
+    roomId: string;
+}
+
 export enum ProcessMoveType {
     win,
     draw,
@@ -35,5 +43,9 @@ export interface ProcessMoveResult {
 }
 
 export interface PlayerDisconnectedDto{
+    message: string;
+}
+
+export interface ErrorDto{
     message: string;
 }
