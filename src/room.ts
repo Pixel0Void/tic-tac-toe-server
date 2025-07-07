@@ -23,3 +23,27 @@ export class Room {
         console.log(`[Room] Room ${this.id} created.`);
     }
 }
+
+export const rooms: { [id: string]: Room } = {};
+
+export function getRoom(roomId: string): Room | undefined {
+    return rooms[roomId];
+}
+
+export function createRoom(): Room {
+    const newRoom = new Room();
+    if (rooms[newRoom.id]) {
+        throw new Error(`Room ${newRoom.id} already exists.`);
+    }
+    rooms[newRoom.id] = newRoom;
+    return newRoom;
+}
+
+export function deleteRoom(roomId: string) : boolean {
+    if (rooms[roomId]) {
+        delete rooms[roomId];
+        console.log(`[SERVER] Room ${roomId} deleted.`);
+        return true;
+    }
+    return false;
+}
