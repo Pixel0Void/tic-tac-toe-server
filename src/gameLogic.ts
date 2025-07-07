@@ -1,6 +1,6 @@
 import { DisconnectReason, Socket } from "socket.io";
-import { createRoom, getRoom, Room, rooms } from "./room";
-import { ErrorDto, GameState, GameStateUpdateDto, PlayerAssignedDto, PlayerDisconnectedDto, PlayerSymbol, RoomJoinedDto } from "./dataTypes";
+import { createRoom, deleteRoom, getRoom, Room, rooms } from "./room";
+import { ErrorDto, GameOverDto, GameState, GameStateUpdateDto, MakeMoveDto, PlayerAssignedDto, PlayerDisconnectedDto, PlayerSymbol, ProcessMoveType, RoomJoinedDto } from "./dataTypes";
 import { io } from "./index";
 
 const socketRoomMap: { [socketId: string]: string } = {};
@@ -66,6 +66,59 @@ export function assignPlayerToRoom(socket: Socket) {
     } else {
         socket.emit("error", { message: "Internal error: Room for joining didn't find/create" } as ErrorDto);
         console.log("[SERVER] Internal error: Room for joining didn't find/create");
+    }
+}
+
+export function makeMove(socket:Socket, data: MakeMoveDto) {
+    const index = data.index;
+        
+    const roomId = socketRoomMap[socket.id];
+    if (!roomId) {
+        socket.emit("error", { message: "You are not in any room." } as ErrorDto);
+        return;
+    }
+
+    const room = getRoom(roomId);
+    if (!room) {
+        socket.emit("error", { message: "Your room didn't find." } as ErrorDto);
+        return;
+    }
+
+    console.log(`[SERVER] [ROOM '${roomId}'] Received 'makeMove' from ${socket.id} for cell ${index}`);
+
+    const moveResult = room.makeMove(socket.id, index);
+    if (!moveResult.success) {
+        socket.emit("error", { message: moveResult.message || "Unknown error in move" } as ErrorDto);
+        return;
+    }
+
+    const gameOutcome = room.processMoveResult();
+    switch (gameOutcome.type) {
+        case ProcessMoveType.win:
+            room.currentGameState = (gameOutcome.overallWinner) ? GameState.GameOver : ((gameOutcome.winner === PlayerSymbol.X) ? GameState.X_Wins : GameState.O_Wins);
+            if (gameOutcome.overallWinner) {
+                io.to(roomId).emit("gameOver", { message: "Game ended.", gameOver: true, winner: gameOutcome.overallWinner } as GameOverDto);
+                console.log(`[SERVER] [ROOM '${roomId}'] The game ended. Winner: ${gameOutcome.overallWinner}`);
+                io.to(roomId).emit("resetGame");
+                io.to(roomId).socketsLeave(roomId);
+                deleteRoom(roomId);
+            } else {
+                io.to(roomId).emit("gameOver", { message: "Round ended.", gameOver: false, winner: gameOutcome.winner } as GameOverDto);
+                console.log(`[SERVER] [ROOM '${roomId}'] Round ended. Winner: ${gameOutcome.winner}. Scores: X: ${room.scores[PlayerSymbol.X]}, O: ${room.scores[PlayerSymbol.O]}`);
+                room.resetRoundState();
+                emitFullGameStateUpdate(roomId);
+            }
+            break;
+        case ProcessMoveType.draw:
+            room.currentGameState = GameState.Draw;
+            io.to(roomId).emit("gameOver", { message: "draw", gameOver: false, winner: PlayerSymbol.None } as GameOverDto);
+            console.log(`[SERVER] [ROOM '${roomId}'] Draw!`);
+            room.resetRoundState();
+            emitFullGameStateUpdate(roomId);
+            break;
+        case ProcessMoveType.continue:
+            emitFullGameStateUpdate(roomId);
+            break;
     }
 }
 

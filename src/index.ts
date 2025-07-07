@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { assignPlayerToRoom, disconnection } from "./gameLogic";
+import { assignPlayerToRoom, disconnection, makeMove } from "./gameLogic";
+import { MakeMoveDto } from "./dataTypes";
 
 const httpServer = createServer();
 
@@ -19,6 +20,10 @@ io.on("connection", (socket) => {
 
     socket.on("findMatch", () => {
         assignPlayerToRoom(socket);
+    });
+
+    socket.on("makeMove", (data: MakeMoveDto) => {
+        makeMove(socket, data);
     });
 });
 
