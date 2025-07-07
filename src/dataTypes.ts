@@ -12,3 +12,15 @@ export enum GameState {
     Draw = 4,
     GameOver = 5
 }
+
+export enum ProcessMoveType {
+    win,
+    draw,
+    continue
+}
+
+export interface ProcessMoveResult {
+    type: ProcessMoveType;
+    winner?: PlayerSymbol;
+    overallWinner?: PlayerSymbol;
+}
