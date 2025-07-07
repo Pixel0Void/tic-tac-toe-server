@@ -1,6 +1,21 @@
 import { DisconnectReason, Socket } from "socket.io";
-import { createRoom, deleteRoom, getRoom, Room, rooms } from "./room";
-import { ErrorDto, GameOverDto, GameState, GameStateUpdateDto, MakeMoveDto, PlayerAssignedDto, PlayerDisconnectedDto, PlayerSymbol, ProcessMoveType, RoomJoinedDto } from "./dataTypes";
+
+import {
+    createRoom,
+    deleteRoom,
+    getRoom,
+    Room,
+    rooms
+} from "./room";
+
+import {
+    ErrorDto, GameOverDto,
+    GameState, GameStateUpdateDto,
+    MakeMoveDto, PlayerAssignedDto,
+    PlayerDisconnectedDto, PlayerSymbol,
+    ProcessMoveType, RoomJoinedDto
+} from "./dataTypes";
+
 import { io } from "./index";
 
 const socketRoomMap: { [socketId: string]: string } = {};
