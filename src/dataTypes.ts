@@ -13,6 +13,15 @@ export enum GameState {
     GameOver = 5
 }
 
+export interface GameStateUpdateDto {
+    board: PlayerSymbol[];
+    scores: { X: number; O: number; }
+    currentTurn: PlayerSymbol;
+    gameState: GameState;
+    roomId: string;
+    playersCount: number;
+}
+
 export enum ProcessMoveType {
     win,
     draw,
