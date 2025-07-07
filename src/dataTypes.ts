@@ -24,3 +24,7 @@ export interface ProcessMoveResult {
     winner?: PlayerSymbol;
     overallWinner?: PlayerSymbol;
 }
+
+export interface PlayerDisconnectedDto{
+    message: string;
+}
