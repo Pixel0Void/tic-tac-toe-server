@@ -1,4 +1,4 @@
-import { GameState, PlayerSymbol } from "./dataTypes";
+import { GameState, PlayerSymbol, ProcessMoveResult, ProcessMoveType } from "./dataTypes";
 
 const SCORE_TO_WIN = 3;
 
@@ -104,6 +104,55 @@ export class Room {
             return PlayerSymbol.O;
         }
         return null;
+    }
+
+    public switchTurn() {
+        this.currentTurn = (this.currentTurn === PlayerSymbol.X) ? PlayerSymbol.O : PlayerSymbol.X;
+    }
+
+    public updateScore(winnerSymbol: PlayerSymbol) {
+        if (this.scores[winnerSymbol] !== undefined) {
+            this.scores[winnerSymbol]!++;
+        }
+    }
+
+    public makeMove(socketId: string, index: number): { success: boolean; message: string } {
+        if (this.currentGameState !== GameState.Active) {
+            return { success: false, message: "Game not yet started or it's finished." };
+        }
+
+        const playerSymbol = this.players[socketId];
+        if (!playerSymbol || playerSymbol !== this.currentTurn) {
+            return { success: false, message: "It's not your turn." };
+        }
+
+        if (this.board[index] === PlayerSymbol.None) {
+            this.board[index] = playerSymbol;
+            return { success: true, message: "Move was successfull" };
+        } else {
+            return { success: false, message: "This cell is occupied." };
+        }
+    }
+
+    public processMoveResult(): ProcessMoveResult{
+        const roundWinner = this.checkWin();
+        if (roundWinner) {
+            this.updateScore(roundWinner);
+            const overallWinner = this.checkOverallWin();
+            if (overallWinner) {
+                this.currentGameState = GameState.GameOver;
+                return { type: ProcessMoveType.win, winner: roundWinner, overallWinner: overallWinner } as ProcessMoveResult;
+            } else {
+                this.currentGameState = (roundWinner === PlayerSymbol.X) ? GameState.X_Wins : GameState.O_Wins;
+                return { type: ProcessMoveType.win, winner: roundWinner } as ProcessMoveResult;
+            }
+        } else if (this.checkDraw()) {
+            this.currentGameState = GameState.Draw;
+            return { type: ProcessMoveType.draw } as ProcessMoveResult;
+        } else {
+            this.switchTurn();
+            return { type: ProcessMoveType.continue } as ProcessMoveResult;
+        }
     }
 }
 
