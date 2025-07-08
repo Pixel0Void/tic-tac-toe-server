@@ -22,10 +22,10 @@ A real-time server for the classic Tic-Tac-Toe game, built using **Node.js**, **
 
 ```
 src/
-├── index.ts         # Entry point
-├── gameLogic.ts      # Game logic for checking win/draw/turns
-├── room.ts      # Handling game rooms
-└── dataTypes.ts          # Custom TypeScript types
+├── index.ts         	   # Entry point
+├── gameLogic.ts     # Game logic for checking win/draw/turns
+├── room.ts            # Handling game rooms
+└── dataTypes.ts     # Custom TypeScript types
 ```
 
 ## 🧪 Getting Started
@@ -50,6 +50,24 @@ npm run dev
 ```
 
 Server will run on [http://localhost:3000](http://localhost:3000) by default.
+
+## 📡 Socket Events
+
+Here are some of the key events the server handles:
+
+| Event             | Description                     |
+|------------------|---------------------------------|
+| `findMatch`      | Finding a match                |
+| `playerAssigned`      | Finding a room and assign a symbol to player                |
+| `roomJoined`      | Found a room and joining to it                |
+| `gameReady`      | Game is ready                |
+| `gameStateUpdate`     | Sending game state |
+| `makeMove`      | Send a player's move            |
+| `gameOver`      | Notify win/draw                 |
+| `resetGame`      | Notify end game                |
+| `disconnect`     | Handle player disconnection     |
+| `playerDisconnected`     | Notify opponent when disconnection     |
+| `error`      | Error handeling                |
 
 ---
 
