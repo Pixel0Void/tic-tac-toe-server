@@ -18,6 +18,16 @@ A real-time server for the classic Tic-Tac-Toe game, built using **Node.js**, **
 - **TypeScript**
 - **Socket.IO**
 
+## 📁 Project Structure
+
+```
+src/
+├── index.ts         # Entry point
+├── gameLogic.ts      # Game logic for checking win/draw/turns
+├── room.ts      # Handling game rooms
+└── dataTypes.ts          # Custom TypeScript types
+```
+
 ## 🧪 Getting Started
 
 ### Prerequisites
